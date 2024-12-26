@@ -1,7 +1,11 @@
 import { test, expect } from '@playwright/test';
+import {faker} from "@faker-js/faker/locale/ar";
+import {configDotenv} from "dotenv"
+
+configDotenv()
 
 test.beforeEach(async ({ page }) => {
-  await page.goto(process.env.URL);
+  await page.goto(process.env.APP_URL);
 })
 
 test('check button Submit enabled', async ({ page }) => {
@@ -19,4 +23,15 @@ test('check PopUp visible', async ({ page }) => {
   const authPopUp = await page.getByTestId("authorizationError-popup")
   await expect(authPopUp).toBeVisible()
 });
+
+test('check PopUp visible with faker framework', async ({page}) => {
+  const userNameField = page.getByTestId('username-input')
+  const userEmailField = page.getByTestId('password-input')
+  await userNameField.fill(faker.internet.username())
+  await userEmailField.fill(faker.internet.email())
+  const submitButton = page.getByTestId('signIn-button')
+  await submitButton.click()
+  const authPopUp = page.getByTestId('authorizationError-popup')
+  await expect(authPopUp).toBeVisible()
+})
 
